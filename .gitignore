@@ -1,0 +1,8 @@
+build/
+test/
+iso/
+
+.DS_Store
+
+*.box
+*.sw?
