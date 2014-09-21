@@ -13,15 +13,21 @@ chown -R vagrant:vagrant /home/vagrant/.ssh
 # speed up ssh
 echo "UseDNS no" >> /etc/ssh/sshd_config
 
-# Install chef from omnibus
-curl -L https://www.getchef.com/chef/install.sh | bash
+# remove debian boot error "Driver pcspkr is already registered, aborting..."
+echo "blacklist pcspkr" >> /etc/modprobe.d/blacklist.conf
 
 # display login promt after boot
 sed "s/quiet splash//" /etc/default/grub > /tmp/grub
-sed "s/GRUB_TIMEOUT=[0-9]/GRUB_TIMEOUT=0/" /tmp/grub > /etc/default/grub
+sed "s/GRUB_TIMEOUT=[0-9]/GRUB_TIMEOUT=1/" /tmp/grub > /etc/default/grub
 update-grub
 
+# make sure, you have virtualbox-guest packages NOT preinstalled /why they are?/, because...
+# - if you do not use it: they are not needed
+# - if you use it: it's better to install it manually, otherwise they can be a cause of problems with vagrant-vbguest plugin update
+apt-get purge --yes virtualbox-guest-* virtualbox-ose-guest-*
+
 # clean up
+apt-get autoremove --yes
 apt-get clean
 
 # Zero free space to aid VM compression

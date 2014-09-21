@@ -1,8 +1,21 @@
 #!/bin/bash
 
+# check required parameters number
+if [ $# -ne 5 ]; then
+    echo "Illegal number of parameters"
+    exit 1
+fi
+
+# Configurations
+BUILD_OSNAME=$1
+BUILD_OSTYPE=$2
+BOX=$3
+ISO_URL=$4
+ISO_MD5=$5
+
 # make sure we have dependencies
-hash vagrant 2>/dev/null || { echo >&2 "ERROR: vagrant not found.  Aborting."; exit 1; }
 hash VBoxManage 2>/dev/null || { echo >&2 "ERROR: VBoxManage not found.  Aborting."; exit 1; }
+hash vagrant 2>/dev/null || { echo >&2 "ERROR: vagrant not found.  Aborting."; exit 1; }
 hash 7z 2>/dev/null || { echo >&2 "ERROR: 7z not found. Aborting."; exit 1; }
 hash curl 2>/dev/null || { echo >&2 "ERROR: curl not found. Aborting."; exit 1; }
 
@@ -21,13 +34,9 @@ set -o nounset
 set -o errexit
 #set -o xtrace
 
-# Configurations
-BOX="debian-wheezy-64"
-ISO_URL="http://cdimage.debian.org/debian-cd/7.6.0/amd64/iso-cd/debian-7.6.0-amd64-netinst.iso"
-ISO_MD5="8a3c2ad7fd7a9c4c7e9bcb5cae38c135"
-
 # location, location, location
-FOLDER_BASE=$(pwd)
+FOLDER_ROOT=$(pwd)
+FOLDER_BASE="${FOLDER_ROOT}/${BUILD_OSNAME}"
 FOLDER_ISO="${FOLDER_BASE}/iso"
 FOLDER_BUILD="${FOLDER_BASE}/build"
 FOLDER_VBOX="${FOLDER_BUILD}/vbox"
@@ -44,11 +53,15 @@ fi
 STOPVM="VBoxManage controlvm ${BOX} poweroff"
 
 # Env option: Use custom preseed.cfg or default
-DEFAULT_PRESEED="preseed.cfg"
+DEFAULT_PRESEED="${FOLDER_BASE}/preseed.cfg"
 PRESEED="${PRESEED:-"$DEFAULT_PRESEED"}"
 
+# Env option: Use custom isolinux.cfg or default
+DEFAULT_ISOLINUX="${FOLDER_ROOT}/isolinux.cfg"
+ISOLINUX="${ISOLINUX:-"$DEFAULT_ISOLINUX"}"
+
 # Env option: Use custom late_command.sh or default
-DEFAULT_LATE_CMD="${FOLDER_BASE}/late_command.sh"
+DEFAULT_LATE_CMD="${FOLDER_ROOT}/late_command.sh"
 LATE_CMD="${LATE_CMD:-"$DEFAULT_LATE_CMD"}"
 
 # Parameter changes from 4.2 to 4.3
@@ -125,6 +138,12 @@ if [ ! -e "${FOLDER_ISO}/custom.iso" ]; then
     exit 1
   fi
 
+  # small @hack
+  if [ "${BUILD_OSNAME}" = "ubuntu" ]; then
+    mv "${FOLDER_ISO_CUSTOM}/install" "${FOLDER_ISO_CUSTOM}/install.amd"
+    mkdir -p "${FOLDER_ISO_CUSTOM}/install"
+  fi
+
   # backup initrd.gz
   echo "Backing up current init.rd ..."
   FOLDER_INSTALL=$(ls -1 -d "${FOLDER_ISO_CUSTOM}/install."* | sed 's/^.*\///')
@@ -157,7 +176,7 @@ if [ ! -e "${FOLDER_ISO}/custom.iso" ]; then
   cd "${FOLDER_BASE}"
   chmod u+w "${FOLDER_ISO_CUSTOM}/isolinux" "${FOLDER_ISO_CUSTOM}/isolinux/isolinux.cfg"
   rm "${FOLDER_ISO_CUSTOM}/isolinux/isolinux.cfg"
-  cp isolinux.cfg "${FOLDER_ISO_CUSTOM}/isolinux/isolinux.cfg"
+  cp "${ISOLINUX}" "${FOLDER_ISO_CUSTOM}/isolinux/isolinux.cfg"
   chmod u+w "${FOLDER_ISO_CUSTOM}/isolinux/isolinux.bin"
 
   # add late_command script
@@ -166,7 +185,7 @@ if [ ! -e "${FOLDER_ISO}/custom.iso" ]; then
   cp "${LATE_CMD}" "${FOLDER_ISO_CUSTOM}/late_command.sh"
 
   echo "Running mkisofs ..."
-  "$MKISOFS" -r -V "Custom Debian Install CD" \
+  "$MKISOFS" -r -V "Custom Install CD" \
     -cache-inodes -quiet \
     -J -l -b isolinux/isolinux.bin \
     -c isolinux/boot.cat -no-emul-boot \
@@ -179,18 +198,18 @@ echo "Creating VM Box..."
 if ! VBoxManage showvminfo "${BOX}" >/dev/null 2>&1; then
   VBoxManage createvm \
     --name "${BOX}" \
-    --ostype Debian_64 \
+    --ostype "${BUILD_OSTYPE}" \
     --register \
     --basefolder "${FOLDER_VBOX}"
 
   VBoxManage modifyvm "${BOX}" \
-    --memory 360 \
-    --boot1 dvd \
-    --boot2 disk \
+    --memory 512 \
+    --boot1 disk \
+    --boot2 dvd \
     --boot3 none \
     --boot4 none \
-    --vram 12 \
-    --pae off \
+    --vram 16 \
+    --pae on \
     --rtcuseutc on
 
   VBoxManage storagectl "${BOX}" \
@@ -201,7 +220,7 @@ if ! VBoxManage showvminfo "${BOX}" >/dev/null 2>&1; then
 
   VBoxManage storageattach "${BOX}" \
     --storagectl "IDE Controller" \
-    --port 1 \
+    --port 0 \
     --device 0 \
     --type dvddrive \
     --medium "${FOLDER_ISO}/custom.iso"
@@ -235,16 +254,21 @@ if ! VBoxManage showvminfo "${BOX}" >/dev/null 2>&1; then
 
   VBoxManage storageattach "${BOX}" \
     --storagectl "IDE Controller" \
-    --port 1 \
+    --port 0 \
     --device 0 \
     --type dvddrive \
-    --medium emptydrive
+    --medium additions
 fi
 
 echo "Building Vagrant Box ..."
 vagrant package --base "${BOX}" --output "${BOX}.box"
 
+echo "Adding Vagrant Box ..."
+vagrant box add --force "${BOX}" "${BOX}.box"
+
 # references:
+# https://github.com/dotzero/vagrant-debian-wheezy-64
+# https://github.com/cal/vagrant-ubuntu-precise-64
 # http://blog.ericwhite.ca/articles/2009/11/unattended-debian-lenny-install/
 # http://docs-v1.vagrantup.com/v1/docs/base_boxes.html
 # http://www.debian.org/releases/stable/example-preseed.txt

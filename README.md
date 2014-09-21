@@ -2,57 +2,61 @@
 
 This script will:
 
- 1. download the `Debian 7.6 "Wheezy"` server, 64bit iso
- 2. ... do some magic to turn it into a vagrant box file
- 3. output `debian-wheezy-64.box`
+ 1. download the `Debian 7.6 "Wheezy"` or `Ubuntu 14.04 "Trusty"` server, 64bit iso
+ 2. do some magic to turn it into a vagrant box file
+ 3. output `debian/debian-wheezy-64.box` or `ubuntu/ubuntu-trusty-64.box`
+ 4. add just created vagrant box to available list
 
 ## Requirements
 
  * Oracle VM VirtualBox
  * Vagrant
- * mkisofs
  * 7zip
+ * curl
+ * mkisofs/genisoimage
+ * md5sum/md5
 
 ## Usage on OSX
 
-    ./build.sh
+    ./build-debian.sh
+or
 
-This should do everything you need. If you don't have `mkisofs` or `p7zip`, install [homebrew](http://mxcl.github.com/homebrew/), then:
+    ./build-ubuntu.sh
 
-    brew install cdrtools
+This should do everything you need. If you don't have required package, install [homebrew](http://mxcl.github.com/homebrew/), then:
+
     brew install p7zip
-
-To add `debian-wheezy-64.box` with name `debian-wheezy` into vagrant:
-
-    vagrant box add "debian-wheezy" debian-wheezy-64.box
+    brew install curl
+    brew install cdrtools
+    brew install coreutils
 
 ## Usage on Linux
 
-    ./build.sh
+    ./build-debian.sh
+or
 
-This should do everything you need. If you don't have `mkisofs` or `p7zip`:
+    ./build-ubuntu.sh
 
-    sudo apt-get install genisoimage
+This should do everything you need. If you don't have required package then:
+
     sudo apt-get install p7zip-full
-
-To add `debian-wheezy-64.box` with name `debian-wheezy` into vagrant:
-
-    vagrant box add "debian-wheezy" debian-wheezy-64.box
+    sudo apt-get install curl
+    sudo apt-get install genisoimage
+    sudo apt-get install coreutils
 
 ## Usage on Windows (under cygwin/git shell)
 
-    ./build.sh
+    ./build-debian.sh
+or
+
+    ./build-ubuntu.sh
 
 Tested under Windows 7 with this tools:
 
- * [cpio](http://gnuwin32.sourceforge.net/packages/cpio.htm)
- * [md5](http://www.fourmilab.ch/md5/)
  * [7zip](http://www.7-zip.org/)
+ * [cpio](http://gnuwin32.sourceforge.net/packages/cpio.htm)
  * [mkisofs](http://sourceforge.net/projects/cdrtoolswin/)
-
-To add `debian-wheezy-64.box` with name `debian-wheezy` into vagrant:
-
-    vagrant box add "debian-wheezy" debian-wheezy-64.box
+ * [md5](http://www.fourmilab.ch/md5/)
 
 ## Environment variables
 
@@ -71,6 +75,4 @@ The following variables are supported:
 
 ### Notes
 
-This script basted on original Carl's [repo](https://github.com/cal/vagrant-ubuntu-precise-64) and with some tweaks to be compatible Debian.
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/dotzero/vagrant-debian-wheezy-64/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+This script basted on original dotzero's [repo](https://github.com/dotzero/vagrant-debian-wheezy-64) and with some tweaks to be compatible Debian/Ubuntu.

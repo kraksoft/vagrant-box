@@ -1,8 +1,19 @@
-build/
-test/
-iso/
+# SCM
+.arch-params
+.bzr
+CVS
+_darcs
+.git
+.hg
+.monotone
+.svn
 
+# Junk
 .DS_Store
+Thumbs.db
 
-*.box
-*.sw?
+
+# Vagrant
+*/build/
+*/iso/
+*/*.box
