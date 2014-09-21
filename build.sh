@@ -106,7 +106,7 @@ if [ ! -e "${ISO_FILENAME}" ]; then
 fi
 
 # make sure download is right...
-ISO_HASH=$($MD5 "${ISO_FILENAME}" | cut -d ' ' -f 1)
+ISO_HASH=$(${MD5} "${ISO_FILENAME}" | cut -d ' ' -f 1)
 if [ "${ISO_MD5}" != "${ISO_HASH}" ]; then
   echo "ERROR: MD5 does not match. Got ${ISO_HASH} instead of ${ISO_MD5}. Aborting."
   exit 1
@@ -120,7 +120,7 @@ if [ ! -e "${FOLDER_ISO}/custom.iso" ]; then
   7z x "${ISO_FILENAME}" -o"${FOLDER_ISO_CUSTOM}"
 
   # If that didn't work, you have to update p7zip
-  if [ ! -e $FOLDER_ISO_CUSTOM ]; then
+  if [ ! -e ${FOLDER_ISO_CUSTOM} ]; then
     echo "Error with extracting the ISO file with your version of p7zip. Try updating to the latest version."
     exit 1
   fi
@@ -210,7 +210,7 @@ if ! VBoxManage showvminfo "${BOX}" >/dev/null 2>&1; then
     --name "SATA Controller" \
     --add sata \
     --controller IntelAhci \
-    $PORTCOUNT \
+    ${PORTCOUNT} \
     --hostiocache off
 
   VBoxManage createhd \
