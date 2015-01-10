@@ -21,11 +21,6 @@ sed "s/quiet splash//" /etc/default/grub > /tmp/grub
 sed "s/GRUB_TIMEOUT=[0-9]/GRUB_TIMEOUT=1/" /tmp/grub > /etc/default/grub
 update-grub
 
-# make sure, you have virtualbox-guest packages NOT preinstalled /why they are?/, because...
-# - if you do not use it: they are not needed
-# - if you use it: it's better to install it manually, otherwise they can be a cause of problems with vagrant-vbguest plugin update
-apt-get purge --yes virtualbox-guest-* virtualbox-ose-guest-*
-
 # clean up
 apt-get autoremove --yes
 apt-get clean
