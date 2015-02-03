@@ -2,9 +2,9 @@
 
 This script will:
 
- 1. download the `Debian 7.7 "Wheezy"` or `Ubuntu 14.10 "Utopic"` server, 64bit iso
+ 1. download the `Debian 7.8 "Wheezy"` or `Ubuntu 14.04 "Trusty"` server, 64bit iso
  2. do some magic to turn it into a vagrant box file
- 3. output `debian/debian-7.7.0-amd64.box` or `ubuntu/ubuntu-14.10-amd64.box`
+ 3. output `debian/debian-7.8.0-amd64.box` or `ubuntu/ubuntu-14.04-amd64.box`
  4. add just created vagrant box to available list
 
 ## Requirements
