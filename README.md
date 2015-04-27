@@ -15,6 +15,7 @@ This script will:
  * curl
  * mkisofs/genisoimage
  * md5sum/md5
+ * xorriso
 
 ## Usage on OSX
 
@@ -29,6 +30,7 @@ This should do everything you need. If you don't have required package, install 
     brew install curl
     brew install cdrtools
     brew install coreutils
+    brew install xorriso
 
 ## Usage on Linux
 
@@ -43,6 +45,7 @@ This should do everything you need. If you don't have required package then:
     sudo apt-get install curl
     sudo apt-get install genisoimage
     sudo apt-get install coreutils
+    sudo apt-get install xorriso
 
 ## Usage on Windows (under cygwin/git shell)
 
