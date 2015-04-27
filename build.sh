@@ -129,9 +129,8 @@ fi
 echo "Creating Custom ISO"
 if [ ! -e "${FOLDER_ISO}/custom.iso" ]; then
 
-  echo "Using 7zip"
-  7z x "${ISO_FILENAME}" -o"${FOLDER_ISO_CUSTOM}"
-
+  echo "Using osirrox"
+  osirrox -indev "${ISO_FILENAME}" -extract / "${FOLDER_ISO_CUSTOM}"
   # If that didn't work, you have to update p7zip
   if [ ! -e ${FOLDER_ISO_CUSTOM} ]; then
     echo "Error with extracting the ISO file with your version of p7zip. Try updating to the latest version."
