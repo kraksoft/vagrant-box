@@ -137,6 +137,9 @@ if [ ! -e "${FOLDER_ISO}/custom.iso" ]; then
     exit 1
   fi
 
+  echo "Making extracted files writable"
+  chmod -R +w "${FOLDER_ISO_CUSTOM}"
+
   # small @hack
   if [ "${BUILD_OSNAME}" = "ubuntu" ]; then
     mv "${FOLDER_ISO_CUSTOM}/install" "${FOLDER_ISO_CUSTOM}/install.amd"
