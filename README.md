@@ -11,10 +11,10 @@ This script will:
 
  * Oracle VM VirtualBox
  * Vagrant
- * 7zip
  * curl
  * mkisofs/genisoimage
  * md5sum/md5
+ * xorriso
 
 ## Usage on OSX
 
@@ -25,10 +25,10 @@ or
 
 This should do everything you need. If you don't have required package, install [homebrew](http://mxcl.github.com/homebrew/), then:
 
-    brew install p7zip
     brew install curl
     brew install cdrtools
     brew install coreutils
+    brew install xorriso
 
 ## Usage on Linux
 
@@ -39,10 +39,10 @@ or
 
 This should do everything you need. If you don't have required package then:
 
-    sudo apt-get install p7zip-full
     sudo apt-get install curl
     sudo apt-get install genisoimage
     sudo apt-get install coreutils
+    sudo apt-get install xorriso
 
 ## Usage on Windows (under cygwin/git shell)
 
@@ -51,9 +51,8 @@ or
 
     ./build-ubuntu.sh
 
-Tested under Windows 7 with this tools:
+Currently untested under Windows.
 
- * [7zip](http://www.7-zip.org/)
  * [cpio](http://gnuwin32.sourceforge.net/packages/cpio.htm)
  * [mkisofs](http://sourceforge.net/projects/cdrtoolswin/)
  * [md5](http://www.fourmilab.ch/md5/)

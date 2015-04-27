@@ -16,7 +16,7 @@ ISO_MD5=$5
 # make sure we have dependencies
 hash VBoxManage 2>/dev/null || { echo >&2 "ERROR: VBoxManage not found.  Aborting."; exit 1; }
 hash vagrant 2>/dev/null || { echo >&2 "ERROR: vagrant not found.  Aborting."; exit 1; }
-hash 7z 2>/dev/null || { echo >&2 "ERROR: 7z not found. Aborting."; exit 1; }
+hash osirrox 2>/dev/null || { echo >&2 "ERROR: osirrox not found. Aborting."; exit 1; }
 hash curl 2>/dev/null || { echo >&2 "ERROR: curl not found. Aborting."; exit 1; }
 
 VBOX_VERSION="$(VBoxManage --version)"
@@ -129,14 +129,15 @@ fi
 echo "Creating Custom ISO"
 if [ ! -e "${FOLDER_ISO}/custom.iso" ]; then
 
-  echo "Using 7zip"
-  7z x "${ISO_FILENAME}" -o"${FOLDER_ISO_CUSTOM}"
-
-  # If that didn't work, you have to update p7zip
+  echo "Using osirrox"
+  osirrox -indev "${ISO_FILENAME}" -extract / "${FOLDER_ISO_CUSTOM}"
   if [ ! -e ${FOLDER_ISO_CUSTOM} ]; then
-    echo "Error with extracting the ISO file with your version of p7zip. Try updating to the latest version."
+    echo "Error with extracting the ISO file with your version of xorriso."
     exit 1
   fi
+
+  echo "Making extracted files writable"
+  chmod -R +w "${FOLDER_ISO_CUSTOM}"
 
   # small @hack
   if [ "${BUILD_OSNAME}" = "ubuntu" ]; then
