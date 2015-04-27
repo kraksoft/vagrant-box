@@ -3,9 +3,9 @@
 BUILD_OSNAME="ubuntu"
 BUILD_OSTYPE="Ubuntu_64"
 
-# last 'LTS' version
-BOX="ubuntu-14.04-amd64"
-ISO_URL="http://old-releases.ubuntu.com/releases/14.04.0/ubuntu-14.04-server-amd64.iso"
-ISO_MD5="01545fa976c8367b4f0d59169ac4866c"
+# last 'non LTS' version
+BOX="ubuntu-14.10-amd64"
+ISO_URL="http://releases.ubuntu.com/releases/14.10/ubuntu-14.10-server-amd64.iso"
+ISO_MD5="91bd1cfba65417bfa04567e4f64b5c55"
 
 ./build.sh ${BUILD_OSNAME} ${BUILD_OSTYPE} ${BOX} ${ISO_URL} ${ISO_MD5}
