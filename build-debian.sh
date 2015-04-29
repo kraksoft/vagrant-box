@@ -45,4 +45,4 @@ BOX="${ISO_FILE:0:12}-${ARCH}"
 #debug enable
 #export VM_GUI='yes';
 
-./build-current.sh ${BUILD_OSNAME} ${OS_TYPE} ${BOX} ${ISO_URL} ${ISO_MD5}
+./build.sh ${BUILD_OSNAME} ${OS_TYPE} ${BOX} ${ISO_URL} ${ISO_MD5}
