@@ -288,21 +288,10 @@ fi
 
 echo "Building Vagrant Box ..."
 vagrant package --base "${BOX}" --output "${BOX}.box"
-
-BOX_MD5="$( md5sum -b ""${BOX}.box"" | tee ""${BOX}.box.md5"" | cut -f1 -sd' ' )"
-
-# use vagrant version for updating box in future
-vrs="$(date +%Y%m%d.%H%M%S)"
+md5sum -b "${BOX}.box" > "${BOX}.box.md5"
 
 echo "Adding Vagrant Box ..."
-vagrant box add \
-	--force "${BOX}" \
-	--box-version "${vrs}" \
-	--provider "VirtualBox" \
-	--checksum-type "md5 \
-	--checksum "${BOX_MD5}" \
-	--name "${BOX}" \
-	"${BOX}.box"
+vagrant box add --force "${BOX}" "${BOX}.box"
 
 # references:
 # https://github.com/dotzero/vagrant-debian-wheezy-64
