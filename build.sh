@@ -200,10 +200,6 @@ if [ ! -e "${FOLDER_ISO}/custom.iso" ]; then
   chmod u+w "${FOLDER_ISO_CUSTOM}"
   cp "${LATE_CMD}" "${FOLDER_ISO_CUSTOM}/late_command.sh"
 
-  # set Virtual box version for download ISO
-  VBOXVER="${VBOX_VERSION:0:6}"
-  sed -i "s|^""VBOXVER="".*|""VBOXVER=\"${VBOXVER}\"""|g" "${FOLDER_ISO_CUSTOM}/late_command.sh"
-
   echo "Running mkisofs ..."
   "$MKISOFS" -r -V "Custom Install CD" \
     -cache-inodes -quiet \
