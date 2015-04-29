@@ -64,6 +64,10 @@ ISOLINUX="${ISOLINUX:-"$DEFAULT_ISOLINUX"}"
 DEFAULT_LATE_CMD="${FOLDER_ROOT}/late_command.sh"
 LATE_CMD="${LATE_CMD:-"$DEFAULT_LATE_CMD"}"
 
+# Env option: Use custom hdd size or default
+DEFAULT_HDD_SIZE="51200"
+HDD_SIZE="${HDD_SIZE:-"$DEFAULT_HDD_SIZE"}"
+
 # Parameter changes from 4.2 to 4.3
 if [[ "$VBOX_VERSION" < 4.3 ]]; then
   PORTCOUNT="--sataportcount 1"
@@ -100,6 +104,18 @@ fi
 if [ -f "${FOLDER_BASE}/${BOX}.box" ]; then
   echo "Removing old ${BOX}.box" ...
   rm "${FOLDER_BASE}/${BOX}.box"
+fi
+
+if [ -d "${FOLDER_ISO_CUSTOM}" ]; then
+  echo "Removing old ${FOLDER_ISO_CUSTOM} ..."
+  chmod -R u+w "${FOLDER_ISO_CUSTOM}"
+  rm -rf "${FOLDER_ISO_CUSTOM}/*"
+fi
+
+if [ -d "${FOLDER_ISO_INITRD}" ]; then
+  echo "Removing old ${FOLDER_ISO_INITRD} ..."
+  chmod -R u+w "${FOLDER_ISO_INITRD}"
+  rm -rf "${FOLDER_ISO_INITRD}/*"
 fi
 
 # Setting things back up again
@@ -184,6 +200,10 @@ if [ ! -e "${FOLDER_ISO}/custom.iso" ]; then
   chmod u+w "${FOLDER_ISO_CUSTOM}"
   cp "${LATE_CMD}" "${FOLDER_ISO_CUSTOM}/late_command.sh"
 
+  # set Virtual box version for download ISO
+  VBOXVER="${VBOX_VERSION:0:6}"
+  sed -i "s|^""VBOXVER="".*|""VBOXVER=\"${VBOXVER}\"""|g" "${FOLDER_ISO_CUSTOM}/late_command.sh"
+
   echo "Running mkisofs ..."
   "$MKISOFS" -r -V "Custom Install CD" \
     -cache-inodes -quiet \
@@ -234,7 +254,7 @@ if ! VBoxManage showvminfo "${BOX}" >/dev/null 2>&1; then
 
   VBoxManage createhd \
     --filename "${FOLDER_VBOX}/${BOX}/${BOX}.vdi" \
-    --size 40960
+    --size ${HDD_SIZE}
 
   VBoxManage storageattach "${BOX}" \
     --storagectl "SATA Controller" \
@@ -252,19 +272,37 @@ if ! VBoxManage showvminfo "${BOX}" >/dev/null 2>&1; then
   done
   echo ""
 
-  VBoxManage storageattach "${BOX}" \
-    --storagectl "IDE Controller" \
-    --port 0 \
-    --device 0 \
-    --type dvddrive \
-    --medium additions
+# sometimes vagrant get error if VBoxGuestAdditions.iso
+# not installed in host system. 
+  VBoxManage storagectl "${BOX}" \
+    --name "IDE Controller" \
+    --remove
+
+#  VBoxManage storageattach "${BOX}" \
+#    --storagectl "IDE Controller" \
+#    --port 0 \
+#    --device 0 \
+#    --type dvddrive \
+#    --medium additions
 fi
 
 echo "Building Vagrant Box ..."
 vagrant package --base "${BOX}" --output "${BOX}.box"
 
+BOX_MD5="$( md5sum -b ""${BOX}.box"" | tee ""${BOX}.box.md5"" | cut -f1 -sd' ' )"
+
+# use vagrant version for updating box in future
+vrs="$(date +%Y%m%d.%H%M%S)"
+
 echo "Adding Vagrant Box ..."
-vagrant box add --force "${BOX}" "${BOX}.box"
+vagrant box add \
+	--force "${BOX}" \
+	--box-version "${vrs}" \
+	--provider "VirtualBox" \
+	--checksum-type "md5 \
+	--checksum "${BOX_MD5}" \
+	--name "${BOX}" \
+	"${BOX}.box"
 
 # references:
 # https://github.com/dotzero/vagrant-debian-wheezy-64
