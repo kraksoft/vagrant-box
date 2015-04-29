@@ -272,18 +272,33 @@ if ! VBoxManage showvminfo "${BOX}" >/dev/null 2>&1; then
   done
   echo ""
 
+  VBoxManage storageattach "${BOX}" \
+    --storagectl "IDE Controller" \
+    --port 0 \
+    --device 0 \
+    --type dvddrive \
+    --medium additions
+
+# start VM with additions in singlemode
+# zerofree disk space
+  ${STARTVM}
+  echo -n "Waiting for VirtualBoxAdditions installer to finish "
+  while VBoxManage list runningvms | grep "${BOX}" >/dev/null; do
+    sleep 20
+    echo -n "."
+  done
+  echo ""
+
 # sometimes vagrant get error if VBoxGuestAdditions.iso
 # not installed in host system. 
   VBoxManage storagectl "${BOX}" \
     --name "IDE Controller" \
     --remove
 
-#  VBoxManage storageattach "${BOX}" \
-#    --storagectl "IDE Controller" \
-#    --port 0 \
-#    --device 0 \
-#    --type dvddrive \
-#    --medium additions
+  VBoxManage modifyhd \
+      "${FOLDER_VBOX}/${BOX}/${BOX}.vdi" \
+      --compact
+
 fi
 
 echo "Building Vagrant Box ..."
