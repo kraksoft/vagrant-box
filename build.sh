@@ -42,6 +42,8 @@ FOLDER_BUILD="${FOLDER_BASE}/build"
 FOLDER_VBOX="${FOLDER_BUILD}/vbox"
 FOLDER_ISO_CUSTOM="${FOLDER_BUILD}/iso/custom"
 FOLDER_ISO_INITRD="${FOLDER_BUILD}/iso/initrd"
+VBOX_VDI="${FOLDER_VBOX}/${BOX}/${BOX}.vdi"
+
 
 # Env option: Use headless mode or GUI
 VM_GUI="${VM_GUI:-}"
@@ -63,6 +65,10 @@ ISOLINUX="${ISOLINUX:-"$DEFAULT_ISOLINUX"}"
 # Env option: Use custom late_command.sh or default
 DEFAULT_LATE_CMD="${FOLDER_ROOT}/late_command.sh"
 LATE_CMD="${LATE_CMD:-"$DEFAULT_LATE_CMD"}"
+
+# Env option: Use custom hdd size or default
+DEFAULT_HDD_SIZE="51200"
+HDD_SIZE="${HDD_SIZE:-"$DEFAULT_HDD_SIZE"}"
 
 # Parameter changes from 4.2 to 4.3
 if [[ "$VBOX_VERSION" < 4.3 ]]; then
@@ -100,6 +106,18 @@ fi
 if [ -f "${FOLDER_BASE}/${BOX}.box" ]; then
   echo "Removing old ${BOX}.box" ...
   rm "${FOLDER_BASE}/${BOX}.box"
+fi
+
+if [ -d "${FOLDER_ISO_CUSTOM}" ]; then
+  echo "Removing old ${FOLDER_ISO_CUSTOM} ..."
+  chmod -R u+w "${FOLDER_ISO_CUSTOM}"
+  rm -rf "${FOLDER_ISO_CUSTOM}/*"
+fi
+
+if [ -d "${FOLDER_ISO_INITRD}" ]; then
+  echo "Removing old ${FOLDER_ISO_INITRD} ..."
+  chmod -R u+w "${FOLDER_ISO_INITRD}"
+  rm -rf "${FOLDER_ISO_INITRD}/*"
 fi
 
 # Setting things back up again
@@ -233,15 +251,15 @@ if ! VBoxManage showvminfo "${BOX}" >/dev/null 2>&1; then
     --hostiocache off
 
   VBoxManage createhd \
-    --filename "${FOLDER_VBOX}/${BOX}/${BOX}.vdi" \
-    --size 40960
+    --filename "${VBOX_VDI}" \
+    --size ${HDD_SIZE}
 
   VBoxManage storageattach "${BOX}" \
     --storagectl "SATA Controller" \
     --port 0 \
     --device 0 \
     --type hdd \
-    --medium "${FOLDER_VBOX}/${BOX}/${BOX}.vdi"
+    --medium "${VBOX_VDI}"
 
   ${STARTVM}
 
@@ -258,10 +276,33 @@ if ! VBoxManage showvminfo "${BOX}" >/dev/null 2>&1; then
     --device 0 \
     --type dvddrive \
     --medium additions
+
+# start VM with additions in 
+# + reboot with custom init for
+# zerofree disk space
+  ${STARTVM}
+  echo -n "Waiting for VirtualBoxAdditions installer to finish "
+  while VBoxManage list runningvms | grep "${BOX}" >/dev/null; do
+    sleep 20
+    echo -n "."
+  done
+  echo ""
+
+# sometimes vagrant get error if VBoxGuestAdditions.iso
+# not installed in host system. 
+  VBoxManage storagectl "${BOX}" \
+    --name "IDE Controller" \
+    --remove
+
+  VBoxManage modifyhd \
+      "${VBOX_VDI}" \
+      --compact
+
 fi
 
 echo "Building Vagrant Box ..."
 vagrant package --base "${BOX}" --output "${BOX}.box"
+md5sum -b "${BOX}.box" > "${BOX}.box.md5"
 
 echo "Adding Vagrant Box ..."
 vagrant box add --force "${BOX}" "${BOX}.box"

@@ -19,3 +19,4 @@ Thumbs.db
 */build/
 */iso/
 */*.box
+*/*.box.md5
