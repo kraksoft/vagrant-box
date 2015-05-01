@@ -21,7 +21,7 @@ This script will:
     ./build-debian.sh <32|64> 
 or
 
-    ./build-ubuntu.sh <32|64> [lts]
+    ./build-ubuntu.sh <32|64> [LTS]
 
 This should do everything you need. If you don't have required package, install [homebrew](http://mxcl.github.com/homebrew/), then:
 
@@ -35,7 +35,7 @@ This should do everything you need. If you don't have required package, install 
     ./build-debian.sh <32|64> 
 or
 
-    ./build-ubuntu.sh <32|64> [lts]
+    ./build-ubuntu.sh <32|64> [LTS]
 
 This should do everything you need. If you don't have required package then:
 
@@ -49,7 +49,7 @@ This should do everything you need. If you don't have required package then:
     ./build-debian.sh <32|64> 
 or
 
-    ./build-ubuntu.sh <32|64> [lts]
+    ./build-ubuntu.sh <32|64> [LTS]
 
 Tested under Windows 7 with this tools:
 
