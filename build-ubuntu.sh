@@ -50,14 +50,16 @@ fi
 
 V_YEAR="$( date +%y)"
 if [ "${LTS}" -eq 1 ] ; then
-  echo "LTS SET"
+# LTS release every even year on april. [ref](https://wiki.ubuntu.com/LTS)
+  V_MONTH="04"
+#  echo "LTS SET"
   if [ "$((${V_YEAR}%2))" -eq 1 ] ; then
    V_YEAR="$((${V_YEAR} -1))"
   fi
 fi
 
 UBUNTU_VERSION="${V_YEAR}.${V_MONTH}"
-echo "${UBUNTU_VERSION}"
+#echo "${UBUNTU_VERSION}"
 BUILD_OSNAME="ubuntu"
 ISO_MASK="ubuntu\-${UBUNTU_VERSION}.*\-server\-${ARCH}\.iso"
 UBUNTU_URI="http://releases.ubuntu.com/releases/${UBUNTU_VERSION}"
