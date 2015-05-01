@@ -42,6 +42,8 @@ FOLDER_BUILD="${FOLDER_BASE}/build"
 FOLDER_VBOX="${FOLDER_BUILD}/vbox"
 FOLDER_ISO_CUSTOM="${FOLDER_BUILD}/iso/custom"
 FOLDER_ISO_INITRD="${FOLDER_BUILD}/iso/initrd"
+VBOX_VDI="${FOLDER_VBOX}/${BOX}/${BOX}.vdi"
+
 
 # Env option: Use headless mode or GUI
 VM_GUI="${VM_GUI:-}"
@@ -249,7 +251,7 @@ if ! VBoxManage showvminfo "${BOX}" >/dev/null 2>&1; then
     --hostiocache off
 
   VBoxManage createhd \
-    --filename "${FOLDER_VBOX}/${BOX}/${BOX}.vdi" \
+    --filename "${VBOX_VDI}" \
     --size ${HDD_SIZE}
 
   VBoxManage storageattach "${BOX}" \
@@ -257,7 +259,7 @@ if ! VBoxManage showvminfo "${BOX}" >/dev/null 2>&1; then
     --port 0 \
     --device 0 \
     --type hdd \
-    --medium "${FOLDER_VBOX}/${BOX}/${BOX}.vdi"
+    --medium "${VBOX_VDI}"
 
   ${STARTVM}
 
@@ -275,7 +277,8 @@ if ! VBoxManage showvminfo "${BOX}" >/dev/null 2>&1; then
     --type dvddrive \
     --medium additions
 
-# start VM with additions in singlemode
+# start VM with additions in 
+# + reboot with custom init for
 # zerofree disk space
   ${STARTVM}
   echo -n "Waiting for VirtualBoxAdditions installer to finish "
@@ -292,7 +295,7 @@ if ! VBoxManage showvminfo "${BOX}" >/dev/null 2>&1; then
     --remove
 
   VBoxManage modifyhd \
-      "${FOLDER_VBOX}/${BOX}/${BOX}.vdi" \
+      "${VBOX_VDI}" \
       --compact
 
 fi
