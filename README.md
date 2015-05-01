@@ -2,9 +2,9 @@
 
 This script will:
 
- 1. download the last 'STABLE' version `Debian 7.8 "Wheezy"` or last 'LTS' version `Ubuntu 14.04 "Trusty"` server, 64bit iso
+ 1. download the last 'STABLE' version `Debian` or last `Ubuntu` server iso ( 64 or 32 bit )
  2. do some magic to turn it into a vagrant box file
- 3. output `debian/debian-7.8.0-amd64.box` or `ubuntu/ubuntu-14.04-amd64.box`
+ 3. output `debian/debian-{VERSION}-{ARCH}.box` or `ubuntu/ubuntu-{VERSION}-{ARCH}.box`
  4. add just created vagrant box to available list
 
 ## Requirements
@@ -18,10 +18,10 @@ This script will:
 
 ## Usage on OSX
 
-    ./build-debian.sh
+    ./build-debian.sh <32|64> 
 or
 
-    ./build-ubuntu.sh
+    ./build-ubuntu.sh <32|64> [lts]
 
 This should do everything you need. If you don't have required package, install [homebrew](http://mxcl.github.com/homebrew/), then:
 
@@ -32,10 +32,10 @@ This should do everything you need. If you don't have required package, install 
 
 ## Usage on Linux
 
-    ./build-debian.sh
+    ./build-debian.sh <32|64> 
 or
 
-    ./build-ubuntu.sh
+    ./build-ubuntu.sh <32|64> [lts]
 
 This should do everything you need. If you don't have required package then:
 
@@ -46,10 +46,10 @@ This should do everything you need. If you don't have required package then:
 
 ## Usage on Windows (under cygwin/git shell)
 
-    ./build-debian.sh
+    ./build-debian.sh <32|64> 
 or
 
-    ./build-ubuntu.sh
+    ./build-ubuntu.sh <32|64> [lts]
 
 Tested under Windows 7 with this tools:
 
@@ -72,7 +72,11 @@ The following variables are supported:
 
 * `VM_GUI` — if set to `yes` or `1`, disables headless mode for vm. May be useful for debugging installer;
 
+* `HDD_SIZE` — size of hdd image in Mbytes. Default value = 51200 ( = 50GB )
 
 ### Notes
 
-This script basted on original dotzero's [repo](https://github.com/dotzero/vagrant-debian-wheezy-64) and with some tweaks to be compatible Debian/Ubuntu.
+This script basted on 
+ * kraksoft [repo](https://github.com/kraksoft/vagrant-box)
+ * dotzero's [repo](https://github.com/dotzero/vagrant-debian-wheezy-64)
+ * tiwilliam [repo](https://github.com/tiwilliam/vagrant-debian)
