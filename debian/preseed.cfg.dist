@@ -1,4 +1,4 @@
-#### Contents of the preconfiguration file (for jessie)
+#### Contents of the preconfiguration file (for wheezy)
 ### Localization
 # Preseeding only locale sets language, country and locale.
 d-i debian-installer/locale string en_US
@@ -11,7 +11,8 @@ d-i debian-installer/locale string en_US
 #d-i localechooser/supported-locales multiselect en_US.UTF-8, nl_NL.UTF-8
 
 # Keyboard selection.
-d-i keyboard-configuration/xkb-keymap select us
+# keymap is an alias for keyboard-configuration/xkb-keymap
+d-i keymap select us
 # d-i keyboard-configuration/toggle select No toggling
 
 ### Network configuration
@@ -29,7 +30,7 @@ d-i netcfg/choose_interface select auto
 
 # To set a different link detection timeout (default is 3 seconds).
 # Values are interpreted as seconds.
-#d-i netcfg/link_wait_timeout string 10
+#d-i netcfg/link_detection_timeout string 10
 
 # If you have a slow dhcp server and the installer times out waiting for
 # it, this might be useful.
@@ -154,8 +155,8 @@ d-i clock-setup/ntp boolean true
 
 # Alternatively, you may specify a disk to partition. If the system has only
 # one disk the installer will default to using that, but otherwise the device
-# name must be given in traditional, non-devfs format (so e.g. /dev/sda
-# and not e.g. /dev/discs/disc0/disc).
+# name must be given in traditional, non-devfs format (so e.g. /dev/hda or
+# /dev/sda, and not e.g. /dev/discs/disc0/disc).
 # For example, to use the first SCSI/SATA hard disk:
 #d-i partman-auto/disk string /dev/sda
 # In addition, you'll need to specify the method to use.
@@ -178,7 +179,7 @@ d-i partman-lvm/confirm_nooverwrite boolean true
 # You can choose one of the three predefined partitioning recipes:
 # - atomic: all files in one partition
 # - home:   separate /home partition
-# - multi:  separate /home, /var, and /tmp partitions
+# - multi:  separate /home, /usr, /var, and /tmp partitions
 d-i partman-auto/choose_recipe select atomic
 
 # Or provide a recipe of your own...
@@ -283,7 +284,7 @@ d-i partman/confirm_nooverwrite boolean true
 
 # The kernel image (meta) package to be installed; "none" can be used if no
 # kernel is to be installed.
-#d-i base-installer/kernel/image string linux-image-586
+#d-i base-installer/kernel/image string linux-image-486
 
 ### Apt setup
 # You can choose to install non-free and contrib software.
@@ -312,12 +313,11 @@ d-i partman/confirm_nooverwrite boolean true
 # authentication. Warning: Insecure, not recommended.
 #d-i debian-installer/allow_unauthenticated boolean true
 
-# Uncomment this to add multiarch configuration for i386
-#d-i apt-setup/multiarch string i386
-
-
 ### Package selection
-#tasksel tasksel/first multiselect standard, web-server, kde-desktop
+#tasksel tasksel/first multiselect standard, web-server
+# If the desktop task is selected, install the kde and xfce desktops
+# instead of the default gnome desktop.
+#tasksel tasksel/desktop multiselect kde, xfce
 
 # Individual additional packages to install
 #d-i pkgsel/include string openssh-server build-essential
@@ -330,48 +330,6 @@ d-i partman/confirm_nooverwrite boolean true
 # but sending reports helps the project determine what software is most
 # popular and include it on CDs.
 #popularity-contest popularity-contest/participate boolean false
-
-### Boot loader installation
-# Grub is the default boot loader (for x86). If you want lilo installed
-# instead, uncomment this:
-#d-i grub-installer/skip boolean true
-# To also skip installing lilo, and install no bootloader, uncomment this
-# too:
-#d-i lilo-installer/skip boolean true
-
-
-# This is fairly safe to set, it makes grub install automatically to the MBR
-# if no other operating system is detected on the machine.
-d-i grub-installer/only_debian boolean true
-
-# This one makes grub-installer install to the MBR if it also finds some other
-# OS, which is less safe as it might not be able to boot that other OS.
-d-i grub-installer/with_other_os boolean true
-
-# Due notably to potential USB sticks, the location of the MBR can not be
-# determined safely in general, so this needs to be specified:
-#d-i grub-installer/bootdev  string /dev/sda
-# To install to the first device (assuming it is not a USB stick):
-#d-i grub-installer/bootdev  string default
-
-# Alternatively, if you want to install to a location other than the mbr,
-# uncomment and edit these lines:
-#d-i grub-installer/only_debian boolean false
-#d-i grub-installer/with_other_os boolean false
-#d-i grub-installer/bootdev  string (hd0,1)
-# To install grub to multiple disks:
-#d-i grub-installer/bootdev  string (hd0,1) (hd1,1) (hd2,1)
-
-# Optional password for grub, either in clear text
-#d-i grub-installer/password password r00tme
-#d-i grub-installer/password-again password r00tme
-# or encrypted using an MD5 hash, see grub-md5-crypt(8).
-#d-i grub-installer/password-crypted password [MD5 hash]
-
-# Use the following option to add additional boot parameters for the
-# installed system (if supported by the bootloader installer).
-# Note: options passed to the installer will be added automatically.
-#d-i debian-installer/add-kernel-opts string nousb
 
 ### Finishing up the installation
 # During installations from serial console, the regular virtual consoles
