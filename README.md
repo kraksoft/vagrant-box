@@ -2,9 +2,9 @@
 
 This script will:
 
- 1. download the last 'STABLE' version `Debian 7.8 "Wheezy"` or last 'LTS' version `Ubuntu 14.04 "Trusty"` server, 64bit iso
+ 1. download the latest version of `Debian netinst` or `Ubuntu server` 64bit iso
  2. do some magic to turn it into a vagrant box file
- 3. output `debian/debian-7.8.0-amd64.box` or `ubuntu/ubuntu-14.04-amd64.box`
+ 3. output `debian/debian-x.y.0-amd64.box` or `ubuntu/ubuntu-xx.yy-amd64.box`
  4. add just created vagrant box to available list
 
 ## Requirements
