@@ -18,7 +18,7 @@ This script will:
 
 ## Before usage
 
-You can choose, which distribution and version you'd like to use, by checking out selected branch from list of all available here: https://github.com/kraksoft/vagrant-box/branches/active
+I've decided to don't use git tags further, so instead, I've created separate git branches with all available distributions and versions. You can see all of them here: https://github.com/kraksoft/vagrant-box/branches/active
 
 ## Usage on OSX
 
