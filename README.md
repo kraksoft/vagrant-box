@@ -16,6 +16,10 @@ This script will:
  * mkisofs/genisoimage
  * md5sum/md5
 
+## Before usage
+
+You can choose, which distribution and version you'd like to use, by checking out selected branch from list of all available here: https://github.com/kraksoft/vagrant-box/branches/active
+
 ## Usage on OSX
 
     ./build-debian.sh
